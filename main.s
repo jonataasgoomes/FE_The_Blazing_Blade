@@ -1,8 +1,13 @@
+.eqv	TRUE, 1
+.eqv	FALSE, 0
+
+.include	"cursor.data"
+
 .text
 
 MAIN:	
 jal 	START
-jal	LEVEL_1
+jal	LEVEL1
 li 	a7, 10		# finaliza a execucao
 ecall
 
@@ -11,5 +16,5 @@ ecall
 .include 	"keyboard.s"
 .include 	"display.s"
 .include 	"sound.s"
-#.include	"MACROSv21.s"
-#.include	"SYSTEMv21.s"
+.include	"MACROSv21.s"
+.include	"SYSTEMv21.s"

@@ -1,23 +1,50 @@
+.data
+LAST_PLAYED:	.word 	0
+LAST_DURATION:	.word	0
+
 .text
 
-# Toca uma nota musical
+# Toca uma nota
 # Parametros:
 # a0 - endereco da musica
 # a1 - indice da nota
 # a2 - instrumento
 # a3 - volume
-PLAY_MUSIC:
+# Retorno:
+# a0 -  TRUE se a nota foi tocada, FALSE caso contrario
+PLAY_NOTE:
+
+la	t0, LAST_PLAYED
+lw	t0, 0(t0)
+beqz	t0, PLAY_NOTE_CONTINUE1
+
+csrr	t1, time
+la	t2, LAST_DURATION
+lw	t2, 0(t2)
+sub	t3, t1, t0
+bge	t3, t2, PLAY_NOTE_CONTINUE1 
+
+li	a0, FALSE
+ret
+
+PLAY_NOTE_CONTINUE1: 
 addi	sp, sp, -4
-sw	a0, 0(sp)
-slli	a1, a1, 3		# multiplica pelo tamanho de uma nota e sua duracao
-add	a0, a0, a1		# calcula o endereco da nota
-lw	a1, 4(a0)		# carrega a duracao da nota
-lw	a0, 0(a0)		# carrega o valor da nota
-li	a7, 31			# toca a nota
+sw	a1, 0(sp)
+
+slli	t0, a1, 3		# calcula o offset do indice
+add	t0, t0, a0		# endereco da nota
+lw	a0, 0(t0)		# valor da nota
+lw	a1, 4(t0)		# duracao da nota
+li	a7, 31
 ecall
-mv 	a0, a1			# carrega a duracao da nota
-li 	a7, 32			# sleep
-ecall		
-lw	a0, 0(sp)
-addi	sp, sp, 4		
+
+csrr	t1, time
+la	t0, LAST_PLAYED
+sw	t1, 0(t0)
+la	t0, LAST_DURATION
+sw	a1, 0(t0)
+
+li	a0, TRUE
+lw	a1, 0(sp)
+addi	sp, sp, 4
 ret

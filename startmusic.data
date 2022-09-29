@@ -1,5 +1,5 @@
 .data
-start_music: .word 22,
+START_MUSIC: .word 22,
 55,976,
 60,488,
 64,488,

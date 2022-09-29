@@ -1,36 +1,61 @@
 .data
+.include	"start.data"
 .include 	"start1.data"
 .include 	"startmusic.data"
 
 .text	
+
+# Menu do jogo
 START:
-addi	sp, sp, -4		
-sw	ra, 0(sp)		# empilha o endereco de retorno
-la	a0, start1		# carrega a imagem
-li	a1, 0			# seleciona o frame 0
-jal	DRAW_BACKGROUND		
-li	t0, 0			# inicia o contador de notas
+addi	sp, sp, -16
+sw	ra, 0(sp)		# empilha ra
+sw	s0, 4(sp)		# empilha s0
+sw	s1, 8(sp)		# empilha s1
+sw	s2, 12(sp)		# empilha s2
+
+la	a0, start		# carrega a imagem 'start'
+li	a1, 0			# frame 0
+jal	DRAW_BACKGROUND
+
+la	a0, start1		# carrega a imagem 'start1'
+li	a1, 1			# frame 1
+jal	DRAW_BACKGROUND
+
+csrr	s0, time		# tempo da ultima troca de frame
+li	s2, 0			# inicia o contador de notas
 
 START_LOOP1:
 jal	KEYBOARD_INPUT
-bnez	a0, START_END1		# se qualquer tecla foi pressionada, termina o loop do start
-la	a0, start_music		# carrega a musica
-lw	t1, 0(a0)		# carrega o numero de notas
-addi	a0, a0, 4		# pula o dado de numero de notas
-mv	a1, t0			# carrega o indice da nota
-li	a2, 1			# define o instrumento
-li	a3, 127			# define o volume
-addi	sp, sp, -4
-sw	a0, 0(sp)		# empilha a0
-jal 	PLAY_MUSIC
-lw	a0, 0(sp)		# desempilha a0
-addi	sp, sp, 4
-addi	t0, t0, 1		# incrementa o contador de notas
-blt	t0, t1, START_LOOP1	# quando a musica terminar, toca novamente	
-li	t0, 0
-j 	START_LOOP1
+bnez	a0, START_END1
+
+csrr	s1, time		# carrega o tempo em milissegundos
+li	t0, 800			# tempo para trocar de frame: 800ms
+sub	t1, s1, s0		# calcula o tempo decorrido
+bltu	t1, t0, START_CONTINUE1
+
+jal	SWITCH_FRAMES
+mv	s0, s1			# atualiza o tempo da ultima troca
+
+START_CONTINUE1:
+la	t0, START_MUSIC
+addi	a0, t0, 4
+mv	a1, s2
+li	a2, 0
+li	a3, 127
+jal	PLAY_NOTE
+add	s2, s2, a0
+la	t0, START_MUSIC
+lw	t0, 0(t0)
+blt	s2, t0, START_CONTINUE2
+li	s2, 0
+
+START_CONTINUE2:
+j	START_LOOP1
 
 START_END1:
-lw	ra, 0(sp)		# desempilha o endereco de retorno
-addi	sp, sp, 4
+lw	ra, 0(sp)		# desempilha ra
+lw	s0, 4(sp)		# desempilha s0
+lw	s1, 8(sp)		# desempilha s1
+lw	s2, 12(sp)		# desempilha s2
+addi	sp, sp, 16
 ret
