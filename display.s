@@ -31,26 +31,28 @@ ret
 
 # Desenha o cursor na tela
 # Parametros:
-# a0 - posicao x do cursor
-# a1 - posicao y do cursor
-# a2[0] - o frame onde a imagem vai ser escrita
+# a0[0] - o frame onde a imagem vai ser escrita
 DRAW_CURSOR:
 addi	sp, sp, -4
-sw	ra, 0(sp)
+sw	ra, 0(sp)		# empilha ra
 
-li	t0, 21
-mul	t1, a0, t0
-mul	t2, a1, t0
-addi	t2, t2, 11
+la	t0, cursor_x
+la	t1, cursor_y
+li	t2, 21
+mv	a1, a0
 la	a0, cursor
-mv	a1, a2
-li	a2, 22
-li	a3, 22
-mv	a4, t1
-mv	a5, t2
+li	a2, 21
+li	a3, 21
+lw	a4, 0(t0)
+lw	a5, 0(t1)
+mul	a4, a4, t2
+mul	a5, a5, t2
+addi	a4, a4, 2
+addi	a5, a5, 15
+
 jal	DRAW_IMAGE
 
-lw	ra, 0(sp)
+lw	ra, 0(sp)		# desempilha ra
 addi	sp, sp, 4
 ret
 

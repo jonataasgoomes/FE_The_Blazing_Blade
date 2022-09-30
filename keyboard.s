@@ -1,19 +1,22 @@
 .eqv	KEYBOARD_MMIO, 0xff200000
 
+
 .eqv	W, 87
 .eqv	A, 65
 .eqv	S, 83
 .eqv	D, 68
+.eqv	X, 88
 .eqv	w, 119
 .eqv	a, 97
 .eqv	s, 115
 .eqv	d, 100
+.eqv	x, 120
 
 .text
 
 # Tenta ler uma tecla do teclado
 # Retorno:
-# a0 - TRUE, se uma tecla foi pressionada, FALSE caso contrario
+# a0 - sucesso (bool)
 # a1 - a tecla pressionada
 KEYBOARD_INPUT:
 li	t0, KEYBOARD_MMIO		# carrega o endereco MMIO do teclado
@@ -25,65 +28,110 @@ lw	a1, 4(t0)			# carrega a tecla lida no endereco MMIO
 KEYBOARD_INPUT_END1:
 ret
 
-
-# Move o cursor uma unidade em uma direcao
+# Executa uma acao de acordo com a tecla pressionada
 # Parametros:
-# a0 - posicao x do cursor
-# a1 - posicao y do cursor
-# a2 - tecla pressionada
-# Retorno:
-# a0 - nova posicao x
-# a1 - nova posicao y
+# a0 - tecla pressionada
+# a1 - endereco das tiles no mapa
+HANDLE_INPUT:
+addi	sp, sp, -4
+sw	ra, 0(sp)		# empilha ra
+
+jal	SELECT_TILE		# esses procedimentos so vao fazer algo se a tecla correta for pressionada
+jal	MOVE_CURSOR
+
+lw	ra, 0(sp)		# desempilha ra
+addi	sp, sp, 4
+ret
+
+
+# Seleciona a tile sob o cursor
+# Parametros:
+# a0 - tecla pressionada
+# a1 - endereco das tiles do mapa
+SELECT_TILE:
+li	t0, X
+li	t1, x
+beq	a0, t0, SELECT_TILE_END1
+beq	a0, t1, SELECT_TILE_END1
+ret
+
+SELECT_TILE_END1:
+la	t0, cursor_x
+la	t1, cursor_y
+
+lw	t0, 0(t0)		# posicao x do cursor
+lw	t1, 0(t1)		# posicao y do cursor
+
+li	t2, 15
+mul	t2, t2, t1
+add	t2, t2, t0		# calcula o indice da tile
+
+la	t3, selected
+sw	t2, 0(t3)		# armazena na variavel 'selected'
+ret 
+
+# Move o cursor uma unidade na direcao selecionada
+# Parametros:
+# a0 - tecla pressionada
 MOVE_CURSOR:
 li	t0, W
 li	t1, w
-beq	a2, t0, MOVE_NORTH
-beq	a2, t1, MOVE_NORTH
+beq	a0, t0, MOVE_NORTH
+beq	a0, t1, MOVE_NORTH
 
 li	t0, A
 li	t1, a
-beq	a2, t0, MOVE_WEST
-beq	a2, t1, MOVE_WEST
+beq	a0, t0, MOVE_WEST
+beq	a0, t1, MOVE_WEST
 
 li	t0, S
 li	t1, s
-beq	a2, t0, MOVE_SOUTH
-beq	a2, t1, MOVE_SOUTH
+beq	a0, t0, MOVE_SOUTH
+beq	a0, t1, MOVE_SOUTH
 
 li	t0, D
 li	t1, d
-beq	a2, t0, MOVE_EAST
-beq	a2, t1, MOVE_EAST
+beq	a0, t0, MOVE_EAST
+beq	a0, t1, MOVE_EAST
 ret
 
 MOVE_NORTH:
-addi	t0, a1, -1
-li	t1, 10
-bgeu	t0, t1, MOVE_CURSOR_CONTINUE1
-mv	a1, t0
+la	t0, cursor_y
+lw	t1, 0(t0)
+addi	t1, t1, -1
+li	t2, 10
+bgeu	t1, t2, MOVE_CURSOR_END1
+sw	t1, 0(t0)
 ret
 
 MOVE_WEST:
-addi	t0, a0, -1
-li	t1, 15
-bgeu	t0, t1, MOVE_CURSOR_CONTINUE1
-mv	a0, t0
+la	t0, cursor_x
+lw	t1, 0(t0)
+addi	t1, t1, -1
+li	t2, 15
+bgeu	t1, t2, MOVE_CURSOR_END1
+sw	t1, 0(t0)
 ret
 
 MOVE_SOUTH:
-addi	t0, a1, 1
-li	t1, 10
-bgeu	t0, t1, MOVE_CURSOR_CONTINUE1
-mv	a1, t0
+la	t0, cursor_y
+lw	t1, 0(t0)
+addi	t1, t1, 1
+li	t2, 10
+bgeu	t1, t2, MOVE_CURSOR_END1
+sw	t1, 0(t0)
 ret
 
 MOVE_EAST:
-addi	t0, a0, 1
-li	t1, 15
-bgeu	t0, t1, MOVE_CURSOR_CONTINUE1
-mv	a0, t0
+la	t0, cursor_x
+lw	t1, 0(t0)
+addi	t1, t1, 1
+li	t2, 15
+bgeu	t1, t2, MOVE_CURSOR_END1
+sw	t1, 0(t0)
+ret
 
-MOVE_CURSOR_CONTINUE1:
+MOVE_CURSOR_END1:
 ret
 
 
