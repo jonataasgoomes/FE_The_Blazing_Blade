@@ -37,17 +37,18 @@ jal	SWITCH_FRAMES
 mv	s0, s1			# atualiza o tempo da ultima troca
 
 START_CONTINUE1:
-la	t0, START_MUSIC
-addi	a0, t0, 4
-mv	a1, s2
-li	a2, 0
-li	a3, 127
+la	t0, START_MUSIC		# carrega o endereco da musica
+addi	a0, t0, 4		# pula a word de numero de notas
+mv	a1, s2			# indice da nota
+li	a2, 0			# instrumento
+li	a3, 127			# volume
 jal	PLAY_NOTE
-add	s2, s2, a0
+
+add	s2, s2, a0		# incrementa o contador se a nota foi tocada
 la	t0, START_MUSIC
 lw	t0, 0(t0)
-blt	s2, t0, START_CONTINUE2
-li	s2, 0
+blt	s2, t0, START_CONTINUE2	
+li	s2, 0			# se todas as notas foram tocadas, zera o contador
 
 START_CONTINUE2:
 j	START_LOOP1

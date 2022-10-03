@@ -21,5 +21,6 @@ ecall
 .include 	"keyboard.s"
 .include 	"display.s"
 .include 	"sound.s"
+.include        "character.s"
 .include	"MACROSv21.s"
 .include	"SYSTEMv21.s"

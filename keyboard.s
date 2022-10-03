@@ -96,12 +96,12 @@ beq	a0, t1, MOVE_EAST
 ret
 
 MOVE_NORTH:
-la	t0, cursor_y
-lw	t1, 0(t0)
-addi	t1, t1, -1
-li	t2, 10
+la	t0, cursor_y		
+lw	t1, 0(t0)		
+addi	t1, t1, -1		
+li	t2, 10			
 bgeu	t1, t2, MOVE_CURSOR_END1
-sw	t1, 0(t0)
+sw	t1, 0(t0)		
 ret
 
 MOVE_WEST:
