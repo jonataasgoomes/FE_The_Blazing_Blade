@@ -1,6 +1,7 @@
 .data
 .include	"map1.data"
 .include	"map1_tiles.data"
+.include	"map1_battle.data"
 .include	"level1music.data"
 
 .text
@@ -26,7 +27,9 @@ LEVEL1_LOOP1:
 jal	KEYBOARD_INPUT
 beqz	a0, LEVEL1_CONTINUE1
 mv	a0, a1			# carrega a tecla pressionada
-la	a1, map1_tiles
+la	a1, MAP1_TILES
+la	a2, MAP1_BATTLE
+la	a3, MAP1_CHARACTERS
 jal	HANDLE_INPUT	
 
 LEVEL1_CONTINUE1:
@@ -34,30 +37,12 @@ la	a0, map1		# carrega a imagem 'map1'
 mv	a1, s2			# frame a ser escrito
 jal	DRAW_BACKGROUND		
 
-################ TESTE ###############
-li	a0, 2
+la	a0, MAP1_TILES
 mv	a1, s2
-li	a2, 0
-li	a4, 3
-li	a5, 3
-jal	DRAW_CHARACTER
+jal	DRAW_CHARACTERS
 
-li	a0, 3
+la	a0, MAP1_TILES
 mv	a1, s2
-li	a2, 0
-li	a4, 4
-li	a5, 3
-jal	DRAW_CHARACTER
-
-li	a0, 4
-mv	a1, s2
-li	a2, 0
-li	a4, 5
-li	a5, 3
-jal	DRAW_CHARACTER
-######################################
-
-mv	a0, s2
 jal	DRAW_CURSOR
 jal	SWITCH_FRAMES
 mv	s2, a0			# atualiza o frame a ser escrito
@@ -76,8 +61,16 @@ blt	s3, t0, LEVEL1_CONTINUE2
 li	s3, 0			# se todas as notas foram tocadas, zera o contador
 
 LEVEL1_CONTINUE2:
+la	t0, MAP1_CHARACTERS
+lb	t1, 0(t0)
+lb	t2, 1(t0)
+
+beqz	t1, GAME_OVER
+beqz	t2, LEVEL1_END1
+
 j	LEVEL1_LOOP1
 
+LEVEL1_END1:
 lw	ra, 0(sp)		# desempilha ra
 lw	s0, 4(sp)		# desempilha s0
 lw	s1, 8(sp)		# desempilha s1
