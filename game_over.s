@@ -22,7 +22,7 @@ li	t6, 0
 
 GAME_OVER_LOOP1:
 jal	KEYBOARD_INPUT
-bnez	a0, MAIN
+bnez	a0, GAME_OVER_END1
 
 la	t0, GAME_OVER_MUSIC	# carrega o endereco da musica
 addi	a0, t0, 4		# pula a word de numero de notas
@@ -39,3 +39,7 @@ li	t6, 0			# se todas as notas foram tocadas, zera o contador
 
 GAME_OVER_CONTINUE1:
 j	GAME_OVER_LOOP1
+
+GAME_OVER_END1:
+li	a7, 10
+ecall

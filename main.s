@@ -17,11 +17,18 @@ MSG_TIE:	.string	"Empate"
 MAIN:	
 jal 	START
 jal	LEVEL1
-li 	a7, 10		# finaliza a execucao
-ecall
+jal	LEVEL2
+jal	LEVEL3
+jal	LEVEL4
+jal	LEVEL5
+jal	GAME_OVER
 
 .include	"start.s"
 .include	"level1.s"
+.include	"level2.s"
+.include	"level3.s"
+.include	"level4.s"
+.include	"level5.s"
 .include 	"keyboard.s"
 .include 	"display.s"
 .include	"battle.s"
