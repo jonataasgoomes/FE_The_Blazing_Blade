@@ -44,40 +44,40 @@ ret
 # a1[0] - o frame onde o personagem vai ser desenhado
 DRAW_CHARACTERS:
 addi	sp, sp, -16
-sw	ra, 0(sp)
-sw	s0, 4(sp)
-sw	s1, 8(sp)
-sw	s2, 12(sp)
+sw	ra, 0(sp)		# empilha ra
+sw	s0, 4(sp)		# empilha s0
+sw	s1, 8(sp)		# empilha s1
+sw	s2, 12(sp)		# empilha s2
 
 li	s0, 0			# contador de tiles
-li	s1, 150
-addi	s2, a0, 8
+li	s1, 150			# numero de tiles
+addi	s2, a0, 8		# pula os dados de tamanho
 
 DRAW_CHARACTERS_LOOP1:
 bge	s0, s1, DRAW_CHARACTERS_END1
-lb	a0, 0(s2)
+lb	a0, 0(s2)		# dado da tile
 
-li	t0, 15
-remu	a4, s0, t0
-divu	a5, s0, t0
+li	t0, 15			# tiles por linha
+remu	a4, s0, t0		# posicao x do personagem
+divu	a5, s0, t0		# posicao y do personagem
 
 addi	sp, sp, -4
-sw	a1, 0(sp)
+sw	a1, 0(sp)		# empilha a1
 
 jal	DRAW_CHARACTER
 
-lw	a1, 0(sp)
+lw	a1, 0(sp)		# desempilha a1
 addi	sp, sp, 4
 
-addi	s0, s0, 1
-addi	s2, s2, 1
+addi	s0, s0, 1		# incrementa o contador de tiles
+addi	s2, s2, 1		# vai para a proxima tile
 j	DRAW_CHARACTERS_LOOP1
 
 DRAW_CHARACTERS_END1:
-lw	ra, 0(sp)
-lw	s0, 4(sp)
-lw	s1, 8(sp)
-lw	s2, 12(sp)
+lw	ra, 0(sp)		# desempilha ra
+lw	s0, 4(sp)		# desempilha s0
+lw	s1, 8(sp)		# desempilha s1
+lw	s2, 12(sp)		# desempilha s2
 addi	sp, sp, 16
 ret
 
@@ -89,17 +89,17 @@ ret
 # a5 - posicao y do personagem
 DRAW_CHARACTER:
 addi	sp, sp, -4
-sw	ra, 0(sp)
+sw	ra, 0(sp)		# empilha ra
 
 jal	GET_SPRITE
 beqz	a0, DRAW_CHARACTER_END1
 
-lw	a2, 0(a0)
-lw	a3, 4(a0)
+lw	a2, 0(a0)		# largura do sprite
+lw	a3, 4(a0)		# altura do sprite
 
-li	t0, 21
-mul	a4, a4, t0
-mul	a5, a5, t0	
+li	t0, 21			
+mul	a4, a4, t0		# posicao x
+mul	a5, a5, t0		# posicao y
 
 addi	a4, a4, 5		# pula a borda
 addi	a5, a5, 16		# pula a borda
@@ -107,7 +107,7 @@ addi	a5, a5, 16		# pula a borda
 jal	DRAW_IMAGE
 
 DRAW_CHARACTER_END1:
-lw	ra, 0(sp)
+lw	ra, 0(sp)		# desempilha ra
 addi	sp, sp, 4
 ret
 
@@ -120,18 +120,18 @@ ret
 # a5 - posicao y da tela
 DRAW_CHARACTER_BATTLE:
 addi	sp, sp, -4
-sw	ra, 0(sp)
+sw	ra, 0(sp)		# empilha ra
 
 jal	GET_SPRITE_BATTLE
 beqz	a0, DRAW_CHARACTER_BATTLE_END1
 
-lw	a2, 0(a0)
-lw	a3, 4(a0)
+lw	a2, 0(a0)		# largura do sprite
+lw	a3, 4(a0)		# altura do sprite
 
 jal	DRAW_IMAGE
 
 DRAW_CHARACTER_BATTLE_END1:
-lw	ra, 0(sp)
+lw	ra, 0(sp)		# desempilha ra
 addi	sp, sp, 4
 ret
 

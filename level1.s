@@ -38,11 +38,11 @@ mv	a1, s2			# frame a ser escrito
 jal	DRAW_BACKGROUND		
 
 la	a0, MAP1_TILES
-mv	a1, s2
+mv	a1, s2			# frame
 jal	DRAW_CHARACTERS
 
 la	a0, MAP1_TILES
-mv	a1, s2
+mv	a1, s2			# frame
 jal	DRAW_CURSOR
 jal	SWITCH_FRAMES
 mv	s2, a0			# atualiza o frame a ser escrito
@@ -62,8 +62,8 @@ li	s3, 0			# se todas as notas foram tocadas, zera o contador
 
 LEVEL1_CONTINUE2:
 la	t0, MAP1_CHARACTERS
-lb	t1, 0(t0)
-lb	t2, 1(t0)
+lb	t1, 0(t0)		# numero de aliados
+lb	t2, 1(t0)		# numero de inimigos
 
 beqz	t1, GAME_OVER
 beqz	t2, LEVEL1_END1

@@ -164,11 +164,11 @@ ret
 # a3 - dados de personagens
 ATTACK:
 addi	sp, sp, -20
-sw	ra, 0(sp)
-sw	s0, 4(sp)
-sw	s1, 8(sp)
-sw	s2, 12(sp)
-sw	s3, 16(sp)
+sw	ra, 0(sp)		# empilha ra
+sw	s0, 4(sp)		# empilha s0
+sw	s1, 8(sp)		# empilha s1
+sw	s2, 12(sp)		# empilha s2
+sw	s3, 16(sp)		# empilha s3
 
 li	t0, K
 li	t1, k
@@ -213,20 +213,20 @@ li	t5, 15
 remu	t3, t2, t5		# posicao x selecionada
 divu	t4, t2, t5		# posicao y selecionada
 
-sub	t0, t3, t0
-sub	t1, t4, t1
+sub	t0, t3, t0		# distancia x
+sub	t1, t4, t1		# distancia y
 
-mul	t0, t0, t0
-mul	t1, t1, t1
+mul	t0, t0, t0		# distancia x ao quadrado
+mul	t1, t1, t1		# distancia y ao quadrado
 
-add	t0, t0, t1
+add	t0, t0, t1		# distancia quadrada
 
-li	t1, 1
+li	t1, 1			
 bgt	t0, t1, ATTACK_END3
 
-mv	a0, a2
-mv	a1, s1
-mv	a2, s0
+mv	a0, a2			# plano de fundo
+mv	a1, s1			# ID do aliado
+mv	a2, s0			# ID do inimigo
 jal	BATTLE_SCENE
 
 li	t0, 0
@@ -237,27 +237,27 @@ beq	a0, t1, ATTACK_ENEMY_WIN
 j	ATTACK_END3
 
 ATTACK_ALLY_WIN:
-sb	zero, 0(s2)
+sb	zero, 0(s2)		# remove o inimigo
 
-lb	t0, 1(a3)
-addi	t0, t0, -1
+lb	t0, 1(a3)		
+addi	t0, t0, -1		# decrementa o numero de inimigos
 sb	t0, 1(a3)
 
 j	ATTACK_END3
 
 ATTACK_ENEMY_WIN:
-sb	zero, 0(s3)
+sb	zero, 0(s3)		# remove o aliado
 
 lb	t0, 0(a3)
-addi	t0, t0, -1
+addi	t0, t0, -1		# decrementa o numero de aliados
 sb	t0, 0(a3)
 
 ATTACK_END3:
-lw	ra, 0(sp)
-lw	s0, 4(sp)
-lw	s1, 8(sp)
-lw	s2, 12(sp)
-lw	s3, 16(sp)
+lw	ra, 0(sp)		# desempilha ra
+lw	s0, 4(sp)		# desempilha s0
+lw	s1, 8(sp)		# desempilha s1
+lw	s2, 12(sp)		# desempilha s2
+lw	s3, 16(sp)		# desempilha s3
 addi	sp, sp, 20
 ret
 
@@ -296,20 +296,20 @@ li	t5, 15
 remu	t4, t2, t5		# posicao x selecionada
 divu	t5, t2, t5		# posicao y selecionada
 
-sub	t0, t4, t0
-sub	t1, t5, t1
+sub	t0, t4, t0		# distancia x
+sub	t1, t5, t1		# distancia y
 
-mul	t0, t0, t0
-mul	t1, t1, t1
+mul	t0, t0, t0		# distancia x ao quadrado
+mul	t1, t1, t1		# distancia y ao quadrado
 
-add	t0, t0, t1
+add	t0, t0, t1		# distancia quadrada
 
 li	t1, 25
 bgt	t0, t1,  MOVE_CHARACTER_END2
 
 add	t4, a1, t2		# endereco da tile selecionada
 lb	t0, 0(t4)		# dado da tile selecionada
-sb	zero, 0(t4)
+sb	zero, 0(t4)		
 sb	t0, 0(t3)		# move o dado da tile selecionada para a tile sob o cursor
 
 MOVE_CHARACTER_END2:
